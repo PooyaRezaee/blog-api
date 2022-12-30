@@ -43,3 +43,24 @@ class RegisterUserSerializer(serializers.ModelSerializer):
         if data['password'] != data['password2']:
             raise serializers.ValidationError('passwords must match')
         return data
+
+class ChangePasswordUserSerializer(serializers.Serializer):
+    password1 = serializers.CharField(required=True)
+    password2 = serializers.CharField(required=True)
+
+    
+    def change_password(self,validated_data,user):
+        user.set_password(validated_data['password1'])
+        user.save()
+
+
+    def validate(self, data):
+        password1 =data['password1']
+        password2 =data['password2']
+        if password1 != password2:
+            raise serializers.ValidationError('Password Not Match')
+        if len(password1) <= 6:
+            raise serializers.ValidationError('Password Is Short')
+
+        return data
+    

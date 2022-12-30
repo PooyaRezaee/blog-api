@@ -11,6 +11,7 @@ urlpatterns = [
     path("user/register/", UserCreateView.as_view()),
     path("user/token/", auth_view.ObtainAuthToken.as_view()),
     path("user/token/refresh/", ChangeToken.as_view()),
+    path("user/password/", ChangePasswordApiView.as_view()),
 ]
 
 """

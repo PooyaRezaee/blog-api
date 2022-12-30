@@ -6,7 +6,7 @@ from core.permissions import IsOwnerOrIsAdmin
 from rest_framework.generics import ListAPIView,DestroyAPIView,RetrieveUpdateAPIView
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.serializers import AuthTokenSerializer
-from .serializers import ListUserSerializer,RegisterUserSerializer,AdminUsersSerializer,UpdateUserSerializer
+from .serializers import ListUserSerializer,RegisterUserSerializer,AdminUsersSerializer,UpdateUserSerializer,ChangePasswordUserSerializer
 from .models import User
 
 __all__ = [
@@ -16,7 +16,8 @@ __all__ = [
     'FullUserListApiView',
     'ChangeToken',
     'DeleteUserApiView',
-    'UserApiView'
+    'UserApiView',
+    'ChangePasswordApiView'
 ]
 
 class UserListApiView(ListAPIView):
@@ -100,7 +101,7 @@ class ChangeToken(ListAPIView):
     Access => Any
     - have throttle
     """
-    
+
     permission_classes = [AllowAny]
     throttle_scope = 'ref_token'
 
@@ -145,3 +146,18 @@ class DeleteUserApiView(DestroyAPIView):
 
     serializer_class = UpdateUserSerializer
     queryset = User.objects.all()
+
+class ChangePasswordApiView(APIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = ChangePasswordUserSerializer
+
+    def post(self,request):
+        user = request.user
+        srz = self.serializer_class(data=request.data)
+        if srz.is_valid():
+            srz.change_password(validated_data=srz.validated_data,user=user)
+            return Response({'msg':'Password Changed'},status=status.HTTP_200_OK)
+        return Response(srz.errors,status=status.HTTP_400_BAD_REQUEST)
+
+
+
