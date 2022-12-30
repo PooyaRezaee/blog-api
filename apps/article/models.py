@@ -3,7 +3,7 @@ from apps.account.models import User
 
 class Article(models.Model):
     author = models.ForeignKey(User,on_delete=models.CASCADE,related_name='article')
-    title = models.CharField(max_length=64)
+    title = models.CharField(max_length=64,unique=True)
     body = models.TextField()
     is_edited = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)
