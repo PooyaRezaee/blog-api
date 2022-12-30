@@ -6,7 +6,7 @@ class ArticlesSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Article
-        exclude = ('modified','like')
+        exclude = ('modified','like','body')
     
     def get_count_like(self,obj):
         return obj.like.count()
