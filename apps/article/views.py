@@ -1,16 +1,17 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView,CreateAPIView,RetrieveUpdateAPIView
+from rest_framework.generics import ListAPIView,CreateAPIView,RetrieveUpdateAPIView,DestroyAPIView
 from rest_framework.permissions import AllowAny,IsAuthenticated
 from rest_framework import status
 from .models import Article
 from .serializers import ArticlesSerializer,CreateArticleSerializer,DetailArticlesSerializer
-from core.permissions import IsOwerArticleOrReadOnly
+from core.permissions import IsOwerArticleOrReadOnly,IsOwerArticle
 
 __all__ = [
     'ArticlesApiView',
     'ArticleCreateApiView',
     'DetailArticleApiView',
+    'DeleteArticleApiView',
 ]
 
 class ArticlesApiView(ListAPIView):
@@ -34,3 +35,8 @@ class DetailArticleApiView(RetrieveUpdateAPIView):
     permission_classes = [IsOwerArticleOrReadOnly]
     serializer_class = DetailArticlesSerializer
     queryset = Article.objects.all()
+
+class DeleteArticleApiView(DestroyAPIView):
+    permission_classes = [IsOwerArticle]
+    queryset = Article.objects.all()
+

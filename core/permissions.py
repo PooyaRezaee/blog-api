@@ -12,8 +12,12 @@ class IsOwnerOrIsAdmin(BasePermission):
             return True
         return obj == request.user
     
+class IsOwerArticle(IsOwnerOrIsAdmin):
+    def has_object_permission(self, request, view, obj):
+        return obj.author == request.user
+
 class IsOwerArticleOrReadOnly(IsOwnerOrIsAdmin):
     def has_object_permission(self, request, view, obj):
         if request.method in SAFE_METHODS:
             return True
-        return obj.author == request.user
+        return super().has_object_permission(request, view, obj)
