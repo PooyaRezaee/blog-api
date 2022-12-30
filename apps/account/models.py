@@ -46,6 +46,7 @@ class UserManager(BaseUserManager):
             name=name,
             phone_number=phone_number,
             is_admin=True,
+            is_superuser=True,
         )
 
         user.set_password(password)
@@ -73,5 +74,6 @@ class User(AbstractBaseUser,PermissionsMixin):
     def has_module_perms(self,app_label):
         return True
 
+    @property
     def is_staff(self):
         return self.is_admin
