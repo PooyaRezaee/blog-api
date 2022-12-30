@@ -22,3 +22,13 @@ class CreateArticleSerializer(serializers.ModelSerializer):
             title=validated_data['title'],
             body=validated_data['body'],
         )
+
+class DetailArticlesSerializer(serializers.ModelSerializer):
+    count_like = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = Article
+        exclude = ('modified','like')
+    
+    def get_count_like(self,obj):
+        return obj.like.count()
