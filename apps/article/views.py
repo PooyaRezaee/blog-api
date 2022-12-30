@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView,CreateAPIView,RetrieveUpdateAPIView,DestroyAPIView
@@ -12,6 +13,8 @@ __all__ = [
     'ArticleCreateApiView',
     'DetailArticleApiView',
     'DeleteArticleApiView',
+    'LikeArticleApiView',
+    'DislikeArticleApiView',
 ]
 
 class ArticlesApiView(ListAPIView):
@@ -40,3 +43,28 @@ class DeleteArticleApiView(DestroyAPIView):
     permission_classes = [IsOwerArticle]
     queryset = Article.objects.all()
 
+class LikeArticleApiView(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self,request):
+        try:
+            pk = request.data['id']
+        except:
+            return Response({'msg':'You Must Send id Article'},status=status.HTTP_400_BAD_REQUEST)
+        article = get_object_or_404(Article,pk=pk)
+        if article.like.filter(pk=request.user.pk).exists():
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        article.like.add(request.user)
+        return Response(status=status.HTTP_200_OK)
+
+class DislikeArticleApiView(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self,request):
+        try:
+            pk = request.data['id']
+        except:
+            return Response({'msg':'You Must Send id Article'},status=status.HTTP_400_BAD_REQUEST)
+        article = get_object_or_404(Article,pk=pk)
+        if article.like.filter(pk=request.user.pk).exists():
+            article.like.remove(request.user)
+            return Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
