@@ -151,5 +151,6 @@ REST_FRAMEWORK = {
         'user':'200/hour',
         'register':'5/hour',
         'ref_token':'5/minute',
+        'create_article':'5/minute',
     }
 }
