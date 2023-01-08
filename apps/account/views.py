@@ -4,8 +4,6 @@ from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny,IsAdminUser,IsAuthenticated
 from core.permissions import IsOwnerOrIsAdmin
 from rest_framework.generics import ListAPIView,DestroyAPIView,RetrieveUpdateAPIView
-from rest_framework.authtoken.models import Token
-from rest_framework.authtoken.serializers import AuthTokenSerializer
 from .serializers import ListUserSerializer,RegisterUserSerializer,AdminUsersSerializer,UpdateUserSerializer,ChangePasswordUserSerializer
 from .models import User
 
@@ -14,7 +12,6 @@ __all__ = [
     'UserDetailAPiView',
     'UserCreateView',
     'FullUserListApiView',
-    'ChangeToken',
     'DeleteUserApiView',
     'UserApiView',
     'ChangePasswordApiView'
@@ -92,49 +89,6 @@ class UserCreateView(APIView):
             srz.create_user(srz.validated_data)
             return Response(srz.data,status=status.HTTP_201_CREATED)
         return Response(srz.errors,status=status.HTTP_400_BAD_REQUEST)
-
-
-class ChangeToken(ListAPIView):
-    """
-    Refresh Token If Exists
-
-    Access => Any
-    - have throttle
-    """
-
-    permission_classes = [AllowAny]
-    throttle_scope = 'ref_token'
-
-    def post(self,request):
-        user = request.user
-        data = request.data
-        username = request.data.get('username')
-        password = request.data.get('password')
-        
-        response_error = {}
-        error = False
-
-        if username is None:
-            response_error['username'] = ['This Field Required']
-            error = True
-
-        if password is None:
-            response_error['password'] = ['This Field Required']
-            error = True
-
-        if error:
-            return Response(response_error)
-        
-        srz = AuthTokenSerializer(data=request.data)
-        srz.is_valid(raise_exception=True)
-        user = User.objects.get(email=username)
-        token = Token.objects.filter(user=user)
-        if token.exists():
-            token.first().delete()
-            new_token = Token.objects.create(user=user)
-            return Response({'token':new_token.key})  
-        
-        return Response({'msg':'token not created'})
     
 class DeleteUserApiView(DestroyAPIView):
     """
