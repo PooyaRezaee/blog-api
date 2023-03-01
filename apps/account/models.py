@@ -59,6 +59,7 @@ class User(AbstractBaseUser,PermissionsMixin):
     phone_number = models.CharField(max_length=13)
     is_admin = models.BooleanField(default=False)
     joined = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
 
     objects = UserManager()
 
